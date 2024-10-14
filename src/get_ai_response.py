@@ -20,7 +20,7 @@ def get_response(akash_api_key: str, prompt: str) -> str:
 
     return response.choices[0].message.content
 
-def generate_automessage(akash_api_key: str, recent_messages: list[str], stylized_bot_messages: list[str]) -> str:
+async def generate_automessage(akash_api_key: str, recent_messages: list[str], stylized_bot_messages: list[str]) -> str:
     response: str
     
     prompt: str = f"Ты - участник тупого чата в дискорде под ником megainvalid2475 (мегаинвалид). Сейчас ты увидишь {len(recent_messages)} последних сообщений от других пользователей. "

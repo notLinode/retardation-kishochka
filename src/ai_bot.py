@@ -138,14 +138,10 @@ async def on_message(message: discord.Message):
 
     if is_mentioned or is_mentioned_directly or is_time_to_automessage:
         async with message.channel.typing():
-            automessage: str = ai.generate_automessage(AKASH_API_KEY, recent_messages, stylized_bot_messages)
+            automessage: str = await ai.generate_automessage(AKASH_API_KEY, recent_messages, stylized_bot_messages)
             await message.channel.send(automessage)
 
             recent_messages.clear()
-
-            # stylized_bot_messages.append(automessage)
-            # while (len(stylized_bot_messages) > setting_own_message_memory):
-            #     stylized_bot_messages.pop(0)
 
 
 # Run the bot
