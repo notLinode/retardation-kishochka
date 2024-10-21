@@ -15,6 +15,7 @@ def get_response(akash_api_key: str, prompt: str) -> str:
                     "content": prompt
                 }
             ],
+            timeout=7
         )
 
         return response.choices[0].message.content
