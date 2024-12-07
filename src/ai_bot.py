@@ -32,6 +32,8 @@ setting_own_message_memory: int = 1
 recent_messages: list[str] = []
 stylized_bot_messages: list[str] = []
 
+banned_automsg_channels: list[int] = []
+
 # Print a message when the bot is up
 @client.event
 async def on_ready():
@@ -118,13 +120,27 @@ async def on_message(message: discord.Message):
             help_msg += "\n%prompt [Сообщение: str] - обратиться к Llama 3.1 405B.\n"
             help_msg += "\n%set-message-interval [Интервал: int | random] - поставить количество пользовательских сообщений, после которого бот сам что-то напишет.\n"
             help_msg += "\n%set-own-message-memory [Память: int] - поставить количество собственных сообщений бота, которые он запомнит и учтёт при написании следующего своего сообщения.\n"
-            help_msg += "\n%clear-memory - Очищает память бота от своих и пользовательских сообщений.\n"
+            help_msg += "\n%clear-memory - очищает память бота от своих и пользовательских сообщений.\n"
+            help_msg += "\n%stop - запрещает боту автоматически отправлять сообщения в данный канал.\n"
             help_msg += "\n%ping - pong.\n"
             help_msg += "```"
 
             await message.channel.send(help_msg)
         return
     
+    if message.content.startswith(("%stop", ";stop 2")):
+        channel_id: int = message.channel.id
+
+        if channel_id not in banned_automsg_channels:
+            banned_automsg_channels.append(channel_id)
+            await message.reply("извините я больше не буду сюда писать")
+        else:
+            banned_automsg_channels.remove(channel_id)
+            await message.reply("ок я снова буду сюда писать")
+
+    if message.channel.id in banned_automsg_channels:
+        return
+
     recent_messages.append(message.content)
 
     is_mentioned: bool = client.user in message.mentions
