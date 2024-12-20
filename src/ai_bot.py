@@ -38,7 +38,8 @@ try:
     with open("stop-list.txt", "r") as file:
         banned_automsg_channels = [int(line) for line in file.readlines()]
 except FileNotFoundError:
-    banned_automsg_channels = []
+    with open("stop-list.txt", "w"):
+        banned_automsg_channels = []
 
 # Print a message when the bot is up
 @client.event
