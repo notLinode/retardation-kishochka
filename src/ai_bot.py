@@ -1,7 +1,7 @@
 import discord
 import get_ai_response as ai
+import os
 import random
-import asyncio
 
 # Retrieve sensitive information from an unlisted file
 TOKEN: str
@@ -32,7 +32,13 @@ setting_own_message_memory: int = 1
 recent_messages: list[str] = []
 stylized_bot_messages: list[str] = []
 
-banned_automsg_channels: list[int] = []
+banned_automsg_channels: list[int]
+
+try:
+    with open("stop-list.txt", "r") as file:
+        banned_automsg_channels = [int(line) for line in file.readlines()]
+except FileNotFoundError:
+    banned_automsg_channels = []
 
 # Print a message when the bot is up
 @client.event
@@ -131,12 +137,22 @@ async def on_message(message: discord.Message):
     if message.content.startswith(("%stop", ";stop 2")):
         channel_id: int = message.channel.id
 
-        if channel_id not in banned_automsg_channels:
-            banned_automsg_channels.append(channel_id)
-            await message.reply("извините я больше не буду сюда писать")
-        else:
-            banned_automsg_channels.remove(channel_id)
-            await message.reply("ок я снова буду сюда писать")
+        with open("stop-list.txt", "r+") as file:
+            if channel_id not in banned_automsg_channels:
+                banned_automsg_channels.append(channel_id)
+                await message.reply("извините я больше не буду сюда писать")
+
+                file.seek(0, 2)
+                file.write(str(channel_id) + "\n")
+            else:
+                banned_automsg_channels.remove(channel_id)
+                await message.reply("ок я снова буду сюда писать")
+                
+                lines: list[str] = file.readlines()
+                lines.remove(str(channel_id) + "\n")
+                file.close()
+                with open("stop-list.txt", "w") as file:
+                    file.writelines(lines)
 
     if message.channel.id in banned_automsg_channels:
         return
