@@ -8,7 +8,7 @@ def get_response(akash_api_key: str, prompt: str) -> str:
         )
 
         response = client.chat.completions.create(
-            model="Meta-Llama-3-1-405B-Instruct-FP8",
+            model="Meta-Llama-3-3-70B-Instruct",
             messages = [
                 {
                     "role": "user",
