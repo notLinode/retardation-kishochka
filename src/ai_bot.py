@@ -34,6 +34,8 @@ stylized_bot_messages: list[str] = []
 
 banned_automsg_channels: list[int]
 
+do_automessage: bool = True
+
 try:
     with open("stop-list.txt", "r") as file:
         banned_automsg_channels = [int(line) for line in file.readlines()]
@@ -56,6 +58,7 @@ async def on_message(message: discord.Message):
     global stylized_bot_messages
     global setting_message_interval_is_random
     global message_interval_random
+    global do_automessage
 
     if message.content.startswith("%prompt"):
         async with message.channel.typing():
@@ -154,6 +157,16 @@ async def on_message(message: discord.Message):
                 file.close()
                 with open("stop-list.txt", "w") as file:
                     file.writelines(lines)
+    
+    if message.content.startswith(("%automessage", "%do-automessage")):
+        do_automessage = not do_automessage
+        if do_automessage:
+            await message.reply("Я СНОВА БУДУ ГОВОРИТь")
+        else:
+            await message.reply(":white_check_mark: прощайте..... НАВСЕГДА.......")
+
+    if not do_automessage:
+        return
 
     if message.channel.id in banned_automsg_channels:
         return
